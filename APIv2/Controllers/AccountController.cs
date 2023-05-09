@@ -28,15 +28,18 @@ namespace APIv2.Controllers
             return await _context.account.ToListAsync();
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Accounts>> GetAccount(int id)
+        [HttpPut]
+        public async Task<IActionResult> PutAccount(string name, string email, string password, double phone)
         {
-            var acc = await _context.account.FindAsync(id);
-            if (acc == null)
-            {
-                return NotFound();
-            }
-            return acc;
+            Accounts account = new Accounts();
+            account.Name = name;
+            account.Email = email;
+            account.Password = password;
+            account.Phone = phone.ToString();
+            _context.account.Add(account);
+            await _context.SaveChangesAsync();
+
+            return Ok(account);
         }
 
         [HttpPost]
@@ -48,7 +51,18 @@ namespace APIv2.Controllers
             return Ok(account);
         }
 
-        [HttpPut]
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Accounts>> GetAccount(int id)
+        {
+            var acc = await _context.account.FindAsync(id);
+            if (acc == null)
+            {
+                return NotFound();
+            }
+            return acc;
+        }
+
+        [HttpPut("{id}")]
         public async Task<IActionResult> PutAccount(int id, Accounts account)
         {
             if (id != account.Id)
